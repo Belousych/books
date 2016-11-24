@@ -20,7 +20,7 @@ var BookItem = React.createClass({
       const author = ReactDOM.findDOMNode(this.refs.myInputAuthor).value;
       const name = ReactDOM.findDOMNode(this.refs.myInputName).value;
 
-      this.props.save(this.props.book, author);
+      this.props.save(this.props.book, author, name);
       this.setState({
         author: author,
         name: name,
@@ -32,7 +32,6 @@ var BookItem = React.createClass({
       this.setState({name: event.target.value});
   },
   handleChangeAuthor: function(event) {
-      this.props.save(event.target.value)
       this.setState({author: event.target.value});
   },
   edit: function() {
@@ -94,15 +93,15 @@ var BookList = React.createClass({
     localStorage.setItem('books', JSON.stringify(books));
     this.setState({ books: books });
   },
-  save: function(book, author) {
-      console.log(author);
+  save: function(book, author, name) {
       var books = this.props.books;
-      book.author = 'fff';
-      book.name = 'ddd';
+      book.author = author;
+      book.name = name;
       localStorage.setItem('books', JSON.stringify(books));
       this.setState({ books: books });
   },
   render: function() {
+      console.log(localStorage.getItem('books'));
     return (
       <div>
         <h1>Книг: {this.props.books.length}</h1>
@@ -112,7 +111,7 @@ var BookList = React.createClass({
             return <BookItem
                       book={book}
                       done={this.done.bind(this, book)}
-                      save={this.save.bind(this, book)}
+                      save={this.save.bind(this)}
                       />
           }.bind(this))
         }
