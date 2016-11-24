@@ -7,7 +7,6 @@ import './App.css';
 
 var BookItem = React.createClass({
   getInitialState: function(){
-
     return {
       editing: false,
       author: this.props.book.author,
@@ -17,18 +16,29 @@ var BookItem = React.createClass({
   done: function() {
     this.props.done(this.props.book);
   },
-  cancel: function() {
-    this.setState({
-      editing: false,
-    });
-  },
   save: function() {
+      const author = ReactDOM.findDOMNode(this.refs.myInputAuthor).value;
+      const name = ReactDOM.findDOMNode(this.refs.myInputName).value;
 
+      this.props.save(this.props.book, author);
+      this.setState({
+        author: author,
+        name: name,
+        editing: false,
+      });
+
+  },
+  handleChangeName: function(event) {
+      this.setState({name: event.target.value});
+  },
+  handleChangeAuthor: function(event) {
+      this.props.save(event.target.value)
+      this.setState({author: event.target.value});
   },
   edit: function() {
     // this.props.edit(this.props.book);
     this.setState({
-      editing: true,
+      editing: true
     });
   },
   render: function() {
@@ -37,18 +47,18 @@ var BookItem = React.createClass({
       return <div className="book">
         <div className="book__author">
         Автор:
-          {this.state.editing ? <input type="text" ref="myInputAuthor" value={this.props.book.author}/> : this.props.book.author}
+          {this.state.editing ? <input type="text" ref="myInputAuthor" value={this.state.author} onChange={this.handleChangeAuthor}/> : this.state.author}
 
 
         </div>
         <div className="book__name">
         Название:
-          {this.state.editing ? <input type="text" ref="myInputName" value={this.props.book.name}/> : this.props.book.name}
+          {this.state.editing ? <input type="text" ref="myInputName"  value={this.state.name} onChange={this.handleChangeName}/> : this.state.name}
 
         </div>
 
         <button onClick={this.done}>удалить книгу</button>
-          {this.state.editing ? <span>  <button onClick={this.cancel}>Отменить</button><button onClick={this.save}>Сохранить</button></span> : <button onClick={this.edit}>редактировать книгу</button>}
+          {this.state.editing ? <button onClick={this.save}>Сохранить</button> : <button onClick={this.edit}>редактировать книгу</button>}
 
 
 
@@ -84,7 +94,14 @@ var BookList = React.createClass({
     localStorage.setItem('books', JSON.stringify(books));
     this.setState({ books: books });
   },
-
+  save: function(book, author) {
+      console.log(author);
+      var books = this.props.books;
+      book.author = 'fff';
+      book.name = 'ddd';
+      localStorage.setItem('books', JSON.stringify(books));
+      this.setState({ books: books });
+  },
   render: function() {
     return (
       <div>
