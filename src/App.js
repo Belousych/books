@@ -124,10 +124,11 @@ var BookList = React.createClass({
     books.push(book);
     ReactDOM.findDOMNode(this.refs.myInputAuthor).value = "";
     ReactDOM.findDOMNode(this.refs.myInputName).value = "";
-
     localStorage.setItem('books', JSON.stringify(books));
+    ReactDOM.findDOMNode(this.refs.form).reset();
+    ReactDOM.findDOMNode(this.refs.myImg).src ="";
     this.setState({ books: books });
-    ReactDOM.findDOMNode(this.refs.form)[0].reset();
+
   },
   previewFile: function() {
       var preview = ReactDOM.findDOMNode(this.refs.myImg);
