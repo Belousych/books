@@ -5,12 +5,28 @@ import './App.css';
 
 
 
+
+var previewFile = function (file) {
+  var reader = new FileReader();
+	 // подстановка изображения в атрибут src
+
+   reader.addEventListener("load", function () {
+     return reader.result;
+   });
+
+   if (file) {
+     reader.readAsDataURL(file);
+   }
+}
+
+
 var BookItem = React.createClass({
   getInitialState: function(){
     return {
       editing: false,
       author: this.props.book.author,
-      name: this.props.book.name
+      name: this.props.book.name,
+      img: this.props.book.img
     }
   },
   done: function() {
@@ -44,6 +60,7 @@ var BookItem = React.createClass({
 
 
       return <div className="book">
+        <img src={this.state.img}/>
         <div className="book__author">
         Автор:
           {this.state.editing ? <input type="text" ref="myInputAuthor" value={this.state.author} onChange={this.handleChangeAuthor}/> : this.state.author}
@@ -80,13 +97,26 @@ var BookList = React.createClass({
     var book = {};
     book.author = ReactDOM.findDOMNode(this.refs.myInputAuthor).value;
     book.name = ReactDOM.findDOMNode(this.refs.myInputName).value;
+    book.img = ReactDOM.findDOMNode(this.refs.myImg).src;
     books.push(book);
     ReactDOM.findDOMNode(this.refs.myInputAuthor).value = "";
     ReactDOM.findDOMNode(this.refs.myInputName).value = "";
     localStorage.setItem('books', JSON.stringify(books));
     this.setState({ books: books });
   },
+  previewFile: function() {
+      var preview = ReactDOM.findDOMNode(this.refs.myImg);
+      var file    = ReactDOM.findDOMNode(this.refs.myInputImg).files[0];
+      var reader  = new FileReader();
 
+      reader.addEventListener("load", function () {
+        preview.src = reader.result;
+      }, false);
+
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+  },
   done: function(book) {
     var books = this.props.books;
     books.splice(books.indexOf(book), 1);
@@ -101,7 +131,6 @@ var BookList = React.createClass({
       this.setState({ books: books });
   },
   render: function() {
-      console.log(localStorage.getItem('books'));
     return (
       <div>
         <h1>Книг: {this.props.books.length}</h1>
@@ -123,6 +152,11 @@ var BookList = React.createClass({
         <div>
           <label for="">Название:</label>
           <input type="text" ref="myInputName" />
+        </div>
+        <div>
+          <img ref="myImg" width="145" height="205"/>
+          <label for="">Изображение:</label>
+          <input type="file" ref="myInputImg" onChange={this.previewFile}/>
         </div>
         <button onClick={this.add}>Добавить книгу</button>
       </div>
