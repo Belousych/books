@@ -78,18 +78,18 @@ var BookItem = React.createClass({
       return <div className="book">
       <form>
         <div className="book__img">
-           <img src={this.state.img} ref="myImg"/>
+           <img src={this.props.book.img} ref="myImg"/>
         </div>
         {this.state.editing ? <input type="file" ref="myInputImg" onChange={this.previewFile}/>: ''}
         <div className="book__author">
           <div className='label'>Автор: </div>
-          {this.state.editing ? <div><input type="text" ref="myInputAuthor" value={this.state.author} onChange={this.handleChangeAuthor}/> </div> : this.state.author}
+          {this.state.editing ? <div><input type="text" ref="myInputAuthor" value={this.state.author} onChange={this.handleChangeAuthor}/> </div> : this.props.book.author}
 
 
         </div>
         <div className="book__name">
         <div className='label'>Название: </div>
-          {this.state.editing ? <input type="text" ref="myInputName"  value={this.state.name} onChange={this.handleChangeName}/> : this.state.name}
+          {this.state.editing ? <input type="text" ref="myInputName"  value={this.state.name} onChange={this.handleChangeName}/> : this.props.book.name}
 
         </div>
 
@@ -188,8 +188,8 @@ var BookList = React.createClass({
           this.state.books.map(function(book) {
             return <BookItem
                       book={book}
-                      done={this.done.bind(this, book)}
-                      save={this.save.bind(this)}
+                      done={this.done}
+                      save={this.save}
                       />
           }.bind(this))
         }
