@@ -35,8 +35,8 @@ var BookItem = React.createClass({
   save: function() {
       const author = ReactDOM.findDOMNode(this.refs.myInputAuthor).value;
       const name = ReactDOM.findDOMNode(this.refs.myInputName).value;
-
-      this.props.save(this.props.book, author, name);
+      const img = ReactDOM.findDOMNode(this.refs.myImg).src;
+      this.props.save(this.props.book, author, name, img);
       this.setState({
         author: author,
         name: name,
@@ -56,29 +56,52 @@ var BookItem = React.createClass({
       editing: true
     });
   },
+  previewFile: function() {
+    var preview = ReactDOM.findDOMNode(this.refs.myImg);
+    var file    = ReactDOM.findDOMNode(this.refs.myInputImg).files[0];
+    var reader  = new FileReader();
+
+    reader.addEventListener("load", function () {
+      preview.src = reader.result;
+      this.save();
+      this.setState({
+        img: reader.result
+      });
+    }, false);
+
+    if (file) {
+      reader.readAsDataURL(file);
+
+    }
+  },
   render: function() {
-
-
       return <div className="book">
-        <img src={this.state.img}/>
+      <form>
+        <div className="book__img">
+           <img src={this.state.img} ref="myImg"/>
+        </div>
+        {this.state.editing ? <input type="file" ref="myInputImg" onChange={this.previewFile}/>: ''}
         <div className="book__author">
-        Автор:
-          {this.state.editing ? <input type="text" ref="myInputAuthor" value={this.state.author} onChange={this.handleChangeAuthor}/> : this.state.author}
+          <div className='label'>Автор: </div>
+          {this.state.editing ? <div><input type="text" ref="myInputAuthor" value={this.state.author} onChange={this.handleChangeAuthor}/> </div> : this.state.author}
 
 
         </div>
         <div className="book__name">
-        Название:
+        <div className='label'>Название: </div>
           {this.state.editing ? <input type="text" ref="myInputName"  value={this.state.name} onChange={this.handleChangeName}/> : this.state.name}
 
         </div>
 
-        <button onClick={this.done}>удалить книгу</button>
-          {this.state.editing ? <button onClick={this.save}>Сохранить</button> : <button onClick={this.edit}>редактировать книгу</button>}
+          <div>
+          {this.state.editing ? <button type="button" type="button" onClick={this.save} className="btn btn_green">Сохранить</button> : <button type="button" onClick={this.edit} className="btn btn_primary">Редактировать книгу</button>}
+          </div>
+          <div>
+            <button type="button" onClick={this.done} className="btn btn_red">Удалить книгу</button>
+          </div>
 
 
-
-
+          </form>
         </div>
 
 
@@ -101,8 +124,10 @@ var BookList = React.createClass({
     books.push(book);
     ReactDOM.findDOMNode(this.refs.myInputAuthor).value = "";
     ReactDOM.findDOMNode(this.refs.myInputName).value = "";
+
     localStorage.setItem('books', JSON.stringify(books));
     this.setState({ books: books });
+    ReactDOM.findDOMNode(this.refs.form)[0].reset();
   },
   previewFile: function() {
       var preview = ReactDOM.findDOMNode(this.refs.myImg);
@@ -123,18 +148,42 @@ var BookList = React.createClass({
     localStorage.setItem('books', JSON.stringify(books));
     this.setState({ books: books });
   },
-  save: function(book, author, name) {
+  save: function(book, author, name, img) {
       var books = this.props.books;
       book.author = author;
       book.name = name;
+      book.img = img;
       localStorage.setItem('books', JSON.stringify(books));
       this.setState({ books: books });
   },
   render: function() {
     return (
       <div>
-        <h1>Книг: {this.props.books.length}</h1>
+
+        <div className="create-book">
+          <h1>Добавить книгу</h1>
+        <form ref="form">
+        <div className="book__img">
+          <img ref="myImg"/>
+        </div>
+        <label for="">Изображение:</label>
+        <input type="file" ref="myInputImg" onChange={this.previewFile}/>
         <div>
+          <label for="">Автор:</label>
+          <input type="text" ref="myInputAuthor" />
+        </div>
+        <div>
+          <label for="">Название:</label>
+          <input type="text" ref="myInputName" />
+        </div>
+        <div>
+
+        </div>
+        <button type="button" onClick={this.add} className="btn btn_primary">Добавить книгу</button>
+        </form>
+        </div>
+        <div className="books">
+          <h1>Книг: {this.props.books.length}</h1>
         {
           this.state.books.map(function(book) {
             return <BookItem
@@ -145,21 +194,9 @@ var BookList = React.createClass({
           }.bind(this))
         }
         </div>
-        <div>
-          <label for="">Автор:</label>
-          <input type="text" ref="myInputAuthor" />
-        </div>
-        <div>
-          <label for="">Название:</label>
-          <input type="text" ref="myInputName" />
-        </div>
-        <div>
-          <img ref="myImg" width="145" height="205"/>
-          <label for="">Изображение:</label>
-          <input type="file" ref="myInputImg" onChange={this.previewFile}/>
-        </div>
-        <button onClick={this.add}>Добавить книгу</button>
+
       </div>
+
     );
   }
 });
