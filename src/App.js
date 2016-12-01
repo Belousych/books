@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { createStore } from 'redux';
+import { connect } from 'react-redux';
 import logo from './logo.svg';
-import './App.css';
 
+import './App.css';
 
 
 
@@ -202,7 +204,7 @@ var BookList = React.createClass({
   }
 });
 
-var books = JSON.parse(localStorage.getItem('books')) || [];
+
 
 class App extends Component {
   render() {
@@ -211,14 +213,24 @@ class App extends Component {
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Список книг</h2>
+          <div>Привет из App! </div>
         </div>
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
-        <BookList books={books}/>
+        <BookList books={this.props.books}/>
       </div>
     );
   }
 }
 
-export default App;
+// export default App;
+
+
+function mapStateToProps (state) {
+  return {
+    books: state.books
+  }
+}
+
+export default connect(mapStateToProps)(App)
